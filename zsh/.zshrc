@@ -4,7 +4,7 @@
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME=""  # Disabled — using Starship instead
 
-plugins=(git zsh-autosuggestions)
+plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -24,13 +24,22 @@ fi
 # ----------------------------
 # Fish-like UX
 # ----------------------------
-source ~/.zsh/plugins/zsh-autosuggestions.zsh
-source ~/.zsh/plugins/zsh-syntax-highlighting.zsh
+source ~/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # ----------------------------
 # Autojump
 # ----------------------------
-[[ -f /usr/share/autojump/autojump.zsh ]] && source /usr/share/autojump/autojump.zsh
+if [[ -f /usr/share/autojump/autojump.zsh ]]; then
+  source /usr/share/autojump/autojump.zsh
+elif [[ -f /usr/share/autojump/autojump.bash ]]; then
+  # autojump.bash uses bash's `complete` builtin which is incompatible with zsh
+  complete() { :; }
+  source /usr/share/autojump/autojump.bash
+  unfunction complete
+  # PROMPT_COMMAND is bash-only; use zsh's chpwd hook for directory tracking
+  chpwd_functions+=(autojump_add_to_database)
+fi
 
 # ----------------------------
 # Editor

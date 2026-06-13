@@ -32,25 +32,22 @@ install_omz() {
 }
 
 install_zsh_plugins() {
-  mkdir -p "$HOME/.zsh/plugins"
+  local PDIR="$HOME/.zsh/plugins"
+  mkdir -p "$PDIR"
 
-  if [[ ! -f "$HOME/.zsh/plugins/zsh-autosuggestions.zsh" ]]; then
+  if [[ ! -d "$PDIR/zsh-autosuggestions" ]]; then
     info "Installing zsh-autosuggestions..."
-    git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions /tmp/zsh-autosuggestions
-    cp /tmp/zsh-autosuggestions/zsh-autosuggestions.zsh "$HOME/.zsh/plugins/"
-    rm -rf /tmp/zsh-autosuggestions
+    git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions \
+      "$PDIR/zsh-autosuggestions"
     success "zsh-autosuggestions installed."
   else
     info "zsh-autosuggestions already present."
   fi
 
-  if [[ ! -f "$HOME/.zsh/plugins/zsh-syntax-highlighting.zsh" ]]; then
+  if [[ ! -d "$PDIR/zsh-syntax-highlighting" ]]; then
     info "Installing zsh-syntax-highlighting..."
-    git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting /tmp/zsh-syntax-highlighting
-    cp /tmp/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh "$HOME/.zsh/plugins/"
-    mkdir -p "$HOME/.zsh/plugins/highlighters"
-    cp -r /tmp/zsh-syntax-highlighting/highlighters "$HOME/.zsh/plugins/"
-    rm -rf /tmp/zsh-syntax-highlighting
+    git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting \
+      "$PDIR/zsh-syntax-highlighting"
     success "zsh-syntax-highlighting installed."
   else
     info "zsh-syntax-highlighting already present."
