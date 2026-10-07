@@ -1,0 +1,21 @@
+[user]
+	name = Kouamé Behouba Manassé
+	useConfigOnly = true
+[core]
+	editor = vi
+[commit]
+	gpgsign = true
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	allowedSignersFile = ~/.config/git/allowed_signers
+
+# Identity is picked from the remote URL (SSH host alias)
+[includeIf "hasconfig:remote.*.url:git@github.com-perso:*/**"]
+	path = ~/.config/git/personal
+[includeIf "hasconfig:remote.*.url:git@github.com:*/**"]
+	path = ~/.config/git/work
+[includeIf "hasconfig:remote.*.url:git@github.com-work:*/**"]
+	path = ~/.config/git/work
+[includeIf "hasconfig:remote.*.url:git@github.com-dg-agent:*/**"]
+	path = ~/.config/git/work

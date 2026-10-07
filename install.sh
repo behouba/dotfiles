@@ -78,8 +78,12 @@ create_symlinks() {
   info "Creating symlinks..."
   link "$DOTFILES/zsh/.zshrc"            "$HOME/.zshrc"
   mkdir -p "$HOME/.config"
-  link "$DOTFILES/starship/starship.toml" "$HOME/.config/starship.toml"
+  link "$DOTFILES/starship/.config/starship.toml" "$HOME/.config/starship.toml"
   link "$DOTFILES/tmux/.tmux.conf"       "$HOME/.tmux.conf"
+  link "$DOTFILES/git/.gitconfig"        "$HOME/.gitconfig"
+  mkdir -p "$HOME/.config/git"
+  link "$DOTFILES/git/.config/git/ignore"   "$HOME/.config/git/ignore"
+  link "$DOTFILES/git/.config/git/personal" "$HOME/.config/git/personal"
 }
 
 set_zsh_default() {

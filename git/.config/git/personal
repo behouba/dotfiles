@@ -1,0 +1,3 @@
+[user]
+	email = behouba@gmail.com
+	signingkey = ~/.ssh/id_rsa_work.pub
