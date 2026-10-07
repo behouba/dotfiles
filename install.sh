@@ -10,13 +10,13 @@ warn()    { echo "[WARN] $*"; }
 install_packages() {
   info "Installing system packages..."
   if command -v dnf &>/dev/null; then
-    sudo dnf install -y zsh git curl autojump neovim tmux wl-clipboard xclip
+    sudo dnf install -y zsh git curl autojump neovim tmux wl-clipboard xclip stow
   elif command -v apt &>/dev/null; then
-    sudo apt update && sudo apt install -y zsh git curl autojump neovim tmux wl-clipboard xclip
+    sudo apt update && sudo apt install -y zsh git curl autojump neovim tmux wl-clipboard xclip stow
   elif command -v pacman &>/dev/null; then
-    sudo pacman -S --noconfirm zsh git curl autojump neovim tmux wl-clipboard xclip
+    sudo pacman -S --noconfirm zsh git curl autojump neovim tmux wl-clipboard xclip stow
   else
-    warn "Unknown package manager — install zsh, git, curl, autojump, neovim, tmux, wl-clipboard, xclip manually."
+    warn "Unknown package manager — install zsh, git, curl, autojump, neovim, tmux, wl-clipboard, xclip, stow manually."
   fi
 }
 
@@ -64,26 +64,22 @@ install_starship() {
   fi
 }
 
-link() {
-  local src="$1" dst="$2"
-  if [[ -e "$dst" && ! -L "$dst" ]]; then
-    warn "Backing up existing $dst → $dst.bak"
-    mv "$dst" "$dst.bak"
-  fi
-  ln -sf "$src" "$dst"
-  success "Linked $dst → $src"
-}
+PACKAGES=(zsh tmux starship git)
 
-create_symlinks() {
-  info "Creating symlinks..."
-  link "$DOTFILES/zsh/.zshrc"            "$HOME/.zshrc"
-  mkdir -p "$HOME/.config"
-  link "$DOTFILES/starship/.config/starship.toml" "$HOME/.config/starship.toml"
-  link "$DOTFILES/tmux/.tmux.conf"       "$HOME/.tmux.conf"
-  link "$DOTFILES/git/.gitconfig"        "$HOME/.gitconfig"
-  mkdir -p "$HOME/.config/git"
-  link "$DOTFILES/git/.config/git/ignore"   "$HOME/.config/git/ignore"
-  link "$DOTFILES/git/.config/git/personal" "$HOME/.config/git/personal"
+stow_packages() {
+  info "Linking dotfiles..."
+  for pkg in "${PACKAGES[@]}"; do
+    # Back up real files that would block stow
+    while IFS= read -r f; do
+      local dst="$HOME/${f#./}"
+      if [[ -e "$dst" && ! -L "$dst" ]]; then
+        warn "Backing up existing $dst → $dst.bak"
+        mv "$dst" "$dst.bak"
+      fi
+    done < <(cd "$DOTFILES/$pkg" && find . -type f)
+    stow --restow --target="$HOME" --dir="$DOTFILES" "$pkg"
+    success "Linked $pkg"
+  done
 }
 
 set_zsh_default() {
@@ -100,7 +96,7 @@ install_packages
 install_omz
 install_zsh_plugins
 install_starship
-create_symlinks
+stow_packages
 set_zsh_default
 
 echo ""

@@ -3,3 +3,4 @@
 *.swp
 git/.config/git/work
 git/.config/git/allowed_signers
+*.local

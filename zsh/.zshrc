@@ -62,6 +62,11 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.opencode/bin:$PATH"
 
 # ----------------------------
+# Machine-specific config (not in git)
+# ----------------------------
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+# ----------------------------
 # Starship prompt (must be last)
 # ----------------------------
 export STARSHIP_CONFIG_TITLE=false
