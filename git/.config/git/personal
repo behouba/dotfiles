@@ -1,3 +1,5 @@
 [user]
 	email = behouba@gmail.com
-	signingkey = ~/.ssh/id_rsa_work.pub
+# Signing key differs per machine (written by install.sh)
+[include]
+	path = ~/.config/git/personal.local

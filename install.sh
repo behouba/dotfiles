@@ -64,7 +64,7 @@ install_starship() {
   fi
 }
 
-PACKAGES=(zsh tmux starship git)
+PACKAGES=(zsh tmux starship git nvim)
 
 stow_packages() {
   info "Linking dotfiles..."
@@ -82,6 +82,38 @@ stow_packages() {
   done
 }
 
+setup_git_identities() {
+  local gdir="$HOME/.config/git"
+  mkdir -p "$gdir"
+  if [[ -f "$gdir/work" && -f "$gdir/personal.local" && -f "$gdir/allowed_signers" ]]; then
+    info "Git identities already configured."
+    return
+  fi
+  if [[ ! -t 0 ]]; then
+    warn "No terminal — skipping git identity setup. Re-run install.sh interactively."
+    return
+  fi
+
+  info "Setting up git identities (SSH signing)..."
+  local personal_key work_email work_key
+  read -rp "Personal signing key [~/.ssh/id_rsa_work.pub]: " personal_key
+  read -rp "Work email [dgdev2@dominiongrimm.ca]: " work_email
+  read -rp "Work signing key [~/.ssh/github_dg.pub]: " work_key
+  personal_key="${personal_key:-~/.ssh/id_rsa_work.pub}"
+  work_email="${work_email:-dgdev2@dominiongrimm.ca}"
+  work_key="${work_key:-~/.ssh/github_dg.pub}"
+
+  printf '[user]\n\tsigningkey = %s\n' "$personal_key" > "$gdir/personal.local"
+  printf '[user]\n\temail = %s\n\tsigningkey = %s\n' "$work_email" "$work_key" > "$gdir/work"
+
+  local personal_email
+  personal_email="$(git config -f "$DOTFILES/git/.config/git/personal" user.email)"
+  : > "$gdir/allowed_signers"
+  [[ -f "${personal_key/#\~/$HOME}" ]] && echo "$personal_email $(cut -d' ' -f1,2 "${personal_key/#\~/$HOME}")" >> "$gdir/allowed_signers"
+  [[ -f "${work_key/#\~/$HOME}" ]] && echo "$work_email $(cut -d' ' -f1,2 "${work_key/#\~/$HOME}")" >> "$gdir/allowed_signers"
+  success "Git identities configured. Add both keys to GitHub as Signing Keys."
+}
+
 set_zsh_default() {
   if [[ "$SHELL" != "$(which zsh)" ]]; then
     info "Setting zsh as default shell..."
@@ -97,6 +129,7 @@ install_omz
 install_zsh_plugins
 install_starship
 stow_packages
+setup_git_identities
 set_zsh_default
 
 echo ""
