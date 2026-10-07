@@ -10,13 +10,13 @@ warn()    { echo "[WARN] $*"; }
 install_packages() {
   info "Installing system packages..."
   if command -v dnf &>/dev/null; then
-    sudo dnf install -y zsh git curl autojump neovim
+    sudo dnf install -y zsh git curl autojump neovim tmux wl-clipboard xclip
   elif command -v apt &>/dev/null; then
-    sudo apt update && sudo apt install -y zsh git curl autojump neovim
+    sudo apt update && sudo apt install -y zsh git curl autojump neovim tmux wl-clipboard xclip
   elif command -v pacman &>/dev/null; then
-    sudo pacman -S --noconfirm zsh git curl autojump neovim
+    sudo pacman -S --noconfirm zsh git curl autojump neovim tmux wl-clipboard xclip
   else
-    warn "Unknown package manager — install zsh, git, curl, autojump, neovim manually."
+    warn "Unknown package manager — install zsh, git, curl, autojump, neovim, tmux, wl-clipboard, xclip manually."
   fi
 }
 
@@ -79,6 +79,7 @@ create_symlinks() {
   link "$DOTFILES/zsh/.zshrc"            "$HOME/.zshrc"
   mkdir -p "$HOME/.config"
   link "$DOTFILES/starship/starship.toml" "$HOME/.config/starship.toml"
+  link "$DOTFILES/tmux/.tmux.conf"       "$HOME/.tmux.conf"
 }
 
 set_zsh_default() {
